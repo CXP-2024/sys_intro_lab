@@ -14,10 +14,10 @@ $(M): $(SOURCES) $(INCLUDES)
 	gcc -o $@ -O0 $(SOURCES)
 
 $(MS): $(SOURCES) $(INCLUDES)
-	gcc -o $@ -O0 -DSIMD $(SOURCES)
+	gcc -o $@ -O0 -DSIMD -msse4.1 $(SOURCES)
 
 $(MO): $(SOURCES) $(INCLUDES)
-	gcc -o $@ -O3 -DSIMD $(SOURCES)
+	gcc -o $@ -O3 -DSIMD -msse4.1 $(SOURCES)
 
 clean:
 	rm $(M) $(MS) $(MO)

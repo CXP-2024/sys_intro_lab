@@ -37,7 +37,7 @@ tasks1:
 
 # task 2
 
-.PHONY: t_mnk mnkkmn_b32 mnk_lu2 grade2 tasks2
+.PHONY: t_mnk mnkkmn_b32 mnk_lu2 grade2 tasks2 shit
 
 t_mnk: $(M)
 	@$(M) $(IN) 11 101 1
@@ -56,6 +56,10 @@ tasks2:
 	@$(MAKE) t_mnk
 	@$(MAKE) mnkkmn_b32
 	@$(MAKE) mnk_lu2
+	@$(MAKE) shit
+
+shit: $(M)
+	@$(M) $(IN) 11 114514 1
 
 # task 3
 
@@ -69,7 +73,6 @@ o3: $(MO)
 
 simd-o3: $(MO)
 	@$(MO) $(IN) 13 201 1
-
 
 grade3: simd
 

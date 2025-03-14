@@ -185,26 +185,20 @@ void compute_row_major_mnkkmn_b32()
 void compute_row_major_shit()
 {
 	zero_z();
-	const int B = 64;
+	const int B = 8;
 	if (m % B == 0 && n % B == 0 && k % B == 0)
 	{
 		for (int i = 0; i < m; i += B)
 		{
 			for (int j = 0; j < n; j += B)
 			{
-				for (int l = 0; l < k; l += B)
+				for (int ii = 0; ii < B; ii++)
 				{
-					for (int ii = 0; ii < B; ii++)
+					for (int jj = 0; jj < B; jj++)
 					{
-						for (int jj = 0; jj < B; jj++)
+						for (int ll = 0; ll < k; ll++)
 						{
-							for (int ll = 0; ll < B; ll+=4)
-							{
-								Z[i + ii][j + jj] += X[i + ii][l + ll] * YP[j + jj][l + ll];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 1] * YP[j + jj][l + ll + 1];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 2] * YP[j + jj][l + ll + 2];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 3] * YP[j + jj][l + ll + 3];
-							}
+							Z[i + ii][j + jj] += X[i + ii][ll] * YP[j + jj][ll];
 						}
 					}
 				}
@@ -217,19 +211,13 @@ void compute_row_major_shit()
 		{
 			for (int j = 0; j < n; j += B)
 			{
-				for (int l = 0; l < k; l += B)
+				for (int ii = 0; ii < B && i + ii < m; ii++)
 				{
-					for (int ii = 0; ii < B && i+ii < m; ii++)
+					for (int jj = 0; jj < B && j + jj < n; jj++)
 					{
-						for (int jj = 0; jj < B && j+jj < n; jj++)
+						for (int ll = 0; ll < k; ll++)
 						{
-							for (int ll = 0; ll < B && l+ll < k; ll += 4)
-							{
-								Z[i + ii][j + jj] += X[i + ii][l + ll] * YP[j + jj][l + ll];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 1] * YP[j + jj][l + ll + 1];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 2] * YP[j + jj][l + ll + 2];
-								Z[i + ii][j + jj] += X[i + ii][l + ll + 3] * YP[j + jj][l + ll + 3];
-							}
+							Z[i + ii][j + jj] += X[i + ii][ll] * YP[j + jj][ll];
 						}
 					}
 				}

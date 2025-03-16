@@ -263,24 +263,58 @@ void compute_simd()
 #ifdef SIMD
 	register int i, j, l;
 	zero_z();
-	for (i = 0; i < m; ++i)
+	for (i = 0; i < m; i++)
 	{
-		for (j = 0; j < n; ++j)
+		for (j = 0; j < n; j++)
 		{
-			uint64x2_t res = vdupq_n_u64(0);
-			for (l = 0; l < k; l += 4)
+			uint64x2_t sum = vdupq_n_u64(0);
+			
+			// Process 4 elements at a time with unrolled loop
+			for (l = 0; l < k; l += 16)
 			{
-				uint32x4_t x = vld1q_u32(X32[i] + l);
-				uint32x4_t y = vld1q_u32(YP32[j] + l);
-				uint32x4_t z = vmulq_u32(x, y);
-				uint64x2_t s = vpaddlq_u32(z);
-				res = vaddq_u64(res, s);
+				// Process 16 elements in groups of 4
+				uint32x4_t x1 = vld1q_u32(X32[i] + l);
+				uint32x4_t y1 = vld1q_u32(YP32[j] + l);
+				uint64x2_t p1 = vpaddlq_u32(vmulq_u32(x1, y1));
+				
+				uint32x4_t x2 = vld1q_u32(X32[i] + l + 4);
+				uint32x4_t y2 = vld1q_u32(YP32[j] + l + 4);
+				uint64x2_t p2 = vpaddlq_u32(vmulq_u32(x2, y2));
+				
+				uint32x4_t x3 = vld1q_u32(X32[i] + l + 8);
+				uint32x4_t y3 = vld1q_u32(YP32[j] + l + 8);
+				uint64x2_t p3 = vpaddlq_u32(vmulq_u32(x3, y3));
+				
+				uint32x4_t x4 = vld1q_u32(X32[i] + l + 12);
+				uint32x4_t y4 = vld1q_u32(YP32[j] + l + 12);
+				uint64x2_t p4 = vpaddlq_u32(vmulq_u32(x4, y4));
+				
+				sum = vaddq_u64(sum, vaddq_u64(vaddq_u64(p1, p2), vaddq_u64(p3, p4)));
 			}
-			Z[i][j] = vgetq_lane_u64(res, 0) + vgetq_lane_u64(res, 1);
+			
+			// Sum the final result
+			Z[i][j] = vgetq_lane_u64(sum, 0) + vgetq_lane_u64(sum, 1);
 		}
 	}
 #endif
 }
+
+/*for (i = 0; i < m; ++i)
+{
+	for (j = 0; j < n; ++j)
+	{
+		uint64x2_t res = vdupq_n_u64(0);
+		for (l = 0; l < k; l += 4)
+		{
+			uint32x4_t x = vld1q_u32(X32[i] + l);
+			uint32x4_t y = vld1q_u32(YP32[j] + l);
+			uint32x4_t z = vmulq_u32(x, y);
+			uint64x2_t s = vpaddlq_u32(z);
+			res = vaddq_u64(res, s);
+		}
+		Z[i][j] = vgetq_lane_u64(res, 0) + vgetq_lane_u64(res, 1);
+	}
+}*/
 
 uint64_t elapsed(const struct timespec start, const struct timespec end)
 {

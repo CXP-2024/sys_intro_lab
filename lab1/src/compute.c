@@ -40,11 +40,11 @@ void compute_row_major_mkn()
 {
 	// TODO: task 1
 	zero_z();
-	for (int i = 0; i != m; ++i)
+	for (int i = 0; i ^ m; ++i)
 	{
-		for (int l = 0; l != k; ++l)
+		for (int l = 0; l ^ k; ++l)
 		{
-			for (int j = 0; j != n; ++j)
+			for (int j = 0; j ^ n; ++j)
 			{
 				Z[i][j] += X[i][l] * Y[l][j];
 			}
@@ -185,6 +185,20 @@ void compute_row_major_mnkkmn_b32()
 void compute_row_major_shit()
 {
 	zero_z();
+	register uint64_t reg = 0;
+	for (int i = 0; i != m; ++i)
+	{
+		for (int j = 0; j != n; ++j)
+		{
+			for (int l = 0; l != k; ++l)
+			{
+				reg += X[i][l] * YP[j][l];
+			}
+			Z[i][j] = reg;
+			reg = 0;
+		}
+	}
+	/*zero_z();
 	const int B = 8;
 	if (m % B == 0 && n % B == 0 && k % B == 0)
 	{
@@ -223,7 +237,7 @@ void compute_row_major_shit()
 				}
 			}
 		}
-	}
+	}*/
 }
 
 void compute_row_major_mnk_lu2()
@@ -243,35 +257,28 @@ void compute_row_major_mnk_lu2()
 	}
 }
 
+
 void compute_simd()
 {
 #ifdef SIMD
+	register int i, j, l;
 	zero_z();
-	for (int i = 0; i < m; i++)
+	for (i = 0; i < m; ++i)
 	{
-		for (int j = 0; j < n; j++)
+		for (j = 0; j < n; ++j)
 		{
-			int32x4_t sum = vdupq_n_s32(0);
-			// Handle main chunk
-			for (int l = 0; l < (k / 4) * 4; l += 4)
+			uint64x2_t res = vdupq_n_u64(0);
+			for (l = 0; l < k; l += 4)
 			{
-				int32x4_t x = vld1q_s32(&X[i][l]);
-				int32_t temp[4] = {Y[l][j], Y[l + 1][j], Y[l + 2][j], Y[l + 3][j]};
-				int32x4_t y = vld1q_s32(temp);
-				sum = vmlaq_s32(sum, x, y);
+				uint32x4_t x = vld1q_u32(X32[i] + l);
+				uint32x4_t y = vld1q_u32(YP32[j] + l);
+				uint32x4_t z = vmulq_u32(x, y);
+				uint64x2_t s = vpaddlq_u32(z);
+				res = vaddq_u64(res, s);
 			}
-			// Accumulate result
-			Z[i][j] = vaddvq_s32(sum);
-			// Handle remainder
-			for (int l = (k / 4) * 4; l < k; l++)
-			{
-				Z[i][j] += X[i][l] * Y[l][j];
-			}
+			Z[i][j] = vgetq_lane_u64(res, 0) + vgetq_lane_u64(res, 1);
 		}
 	}
-#else
-	printf("SIMD is not enabled!\n");
-	return;
 #endif
 }
 

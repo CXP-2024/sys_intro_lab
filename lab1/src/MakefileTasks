@@ -72,7 +72,7 @@ o3: $(MO)
 	@$(MO) $(IN) 1 1 1
 
 simd-o3: $(MO)
-	@$(MO) $(IN) 13 201 1
+	@$(MO) $(IN) 12 201 1
 
 grade3: simd
 

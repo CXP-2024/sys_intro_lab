@@ -191,9 +191,16 @@ void compute_row_major_shit()
 	{
 		for (j = 0; j != n; ++j)
 		{
-			for (l = 0; l != k; ++l)
+			for (l = 0; l != k; l+=8)
 			{
 				reg += X[i][l] * YP[j][l];
+				reg += X[i][l+1] * YP[j][l+1];
+				reg += X[i][l+2] * YP[j][l+2];
+				reg += X[i][l+3] * YP[j][l+3];
+				reg += X[i][l+4] * YP[j][l+4];
+				reg += X[i][l+5] * YP[j][l+5];
+				reg += X[i][l+6] * YP[j][l+6];
+				reg += X[i][l+7] * YP[j][l+7];
 
 			}
 			Z[i][j] = reg;

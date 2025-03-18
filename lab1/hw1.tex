@@ -49,7 +49,9 @@ The result of the second part is shown in Figure \ref{fig:part2}.
 		\label{fig:part2}
 \end{figure}
 \\
-From these, we can see that the lu2 method doesn't have a good performance to the mnk method. The t\_mnk and mnkkmn\_b32 method are better than the lu2 method. The t\_mnk method is the best one among them. Plus, we speed up the t\_mnk method by using register, it can achieve nearly 10 times faster than the original one. (which displayed in the "shit" entry)
+From the figures above, we can conclude that the lu2 method provides limited speedup compared to baseline. The mnkkmn\_b32 method achieves much better performance, and the t\_mnk method is the fastest among all.
+
+In addition, we further speed up the t\_mnk method by using register and loop unrolling techniques, achieving approximately 10x acceleration against the baseline (displayed in the "shit" entry.)
 \newpage
 \section*{Part 3: With SIMD}
 The result of the third part is shown in Figure \ref{fig:part3}.
@@ -60,6 +62,6 @@ The result of the third part is shown in Figure \ref{fig:part3}.
 		\label{fig:part3}
 \end{figure}
 \\
-With simd, we achieve nearly 10 times speedup. when using simd-o3, it achieves nearly 100 times than the original one.
+With SIMD, we achieve more than 10 times speedup against baseline. Moreover, when using SIMD combined with o3 optimization, we can achieve nearly 100x acceleration.
 
 \end{document}

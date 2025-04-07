@@ -27,7 +27,7 @@ baseline: $(SOURCES) $(INCLUDES)
 	gcc src/baseline.c src/mm.c -o $@ $(CC_OPTIONS)
 
 gen_data: data/gen.py
-	python3.7 data/gen.py
+	python3 data/gen.py
 
 # Task 1 grading
 task1_queue_check: $(SOURCES) $(INCLUDES)
@@ -53,26 +53,26 @@ grade_checker: test/checker.cpp
 TASK2_GRADING_OPTIONS =  -DGRADING  -DMAX_QUEUE_LEN=2
 
 data/task2.txt: data/gen.py
-	python3.7 $<
+	python3 $<
 
 task2_grade_bin: $(SOURCES) $(INCLUDES)
 	gcc $(TASK2_SOURCES) -o $@ $(CC_OPTIONS) $(TASK2_GRADING_OPTIONS)
 
 task2_grade: task2_grade_bin test/task2.py baseline data/task2.txt grade_checker
-	python3.7 test/task2.py 
+	python3 test/task2.py 
 	rm task2_grade_bin task2_grade_output.txt task2_grade_time.txt task2_grade_baseline_time.txt task2_grade_answer.txt grade_checker
 
 # Task 3 grading
 TASK3_GRADING_OPTIONS =  -DGRADING  -DMAX_QUEUE_LEN=2
 
 data/task3.txt: data/gen.py
-	python3.7 data/gen.py
+	python3 data/gen.py
 
 task3_grade_bin: $(SOURCES) $(INCLUDES)
 	gcc $(TASK3_SOURCES) -o $@ $(CC_OPTIONS) $(TASK3_GRADING_OPTIONS)
 
 task3_grade: task3_grade_bin test/task3.py baseline data/task3.txt grade_checker
-	python3.7 test/task3.py 
+	python3 test/task3.py 
 	rm task3_grade_bin task3_grade_output.txt task3_grade_time.txt task3_grade_baseline_time.txt task3_grade_answer.txt grade_checker
 
 # Task4, leave for you to implement.
@@ -81,7 +81,7 @@ task3_grade: task3_grade_bin test/task3.py baseline data/task3.txt grade_checker
 
 task4_grade: data_source.txt
 	make multiply
-	python3.7 test/task4.py
+	python3 test/task4.py
 
 clean:
 	rm data/task2.txt data/task3.txt \

@@ -3,6 +3,8 @@
 
 // You may need to modify the code below to your lab1's code.
 void mm_compute(MMData* data){
+	// the basic matrix multiplication
+	/*
     int m = data->m;
     int k = data->k;
     int n = data->n;
@@ -18,6 +20,31 @@ void mm_compute(MMData* data){
             }
         }
     }
+	*/
+// optimized code, unroll the loop to mkn
+		int m = data->m;
+		int k = data->k;
+		int n = data->n;
+		int *X = data->X;
+		int *Y = data->Y;
+		int *Z = data->Z;
+		register int i, j, l;
+		
+		// First initialize Z to zeros
+		for(i = 0; i < m; i++){
+			for(j = 0; j < n; j++){
+				Z[i*n+j] = 0;
+			}
+		}
+
+		// Then perform the multiplication
+		for(i = 0; i < m; i++){
+			for(l = 0; l < k; l++){
+				for(j = 0; j < n; j++){
+					Z[i*n+j] += X[i*k+l] * Y[l*n+j];
+				}
+			}
+		}
 }
 
 void load_MMData(FILE* fp, MMData* data){
@@ -32,7 +59,7 @@ void load_MMData(FILE* fp, MMData* data){
     data->X = (int*) malloc(sizeof(int)*m*k);
     data->Y = (int*) malloc(sizeof(int)*k*n);
     data->Z = (int*) malloc(sizeof(int)*m*n);
-    // remerber to free them after output
+    // remember to free them after output
 
     // read X
     for(int i=0; i<m*k; i++){

@@ -43,7 +43,7 @@ task1_grade_bin: $(SOURCES) $(INCLUDES)
 
 task1_grade: task1_grade_bin test/task1.py
 	./task1_grade_bin > task1_grade_output.txt
-	python3.7 test/task1.py
+	python3 test/task1.py
 	rm task1_grade_bin task1_grade_output.txt
 
 # Task 2 grading

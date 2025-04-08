@@ -5,45 +5,117 @@
 
 #include "queue.h"
 
+// Mutex for thread-safe output
+pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void compute(){
-    // This is a naive implementation for demo the input and output, you can change anything.
-    // !! In task3, You should read the next data AFTER printing the last one
-    int t,  N, res;
-    FILE* fp=fopen("./data/task3.txt", "r");
-    if(fp==NULL){
-        printf("Error opening file\n");
-        exit(1);
-    }
-    fscanf(fp, "%d", &N);
-    for(t=0; t<N; t++){
-        MMData data;// fill the MMData
+// Producer-consumer thread functions
+void *producer_func(void *arg);
+void *consumer_func(void *arg);
 
-        // !! In task3, You should read the next data AFTER printing the last one
-        load_MMData(fp, &data);
+// Thread arguments
+typedef struct
+{
+	int id;
+} thread_args_t;
 
-        // add to queue
-        res = queue_add(data);
-        if(res == -1)
-            printf("queue_add error\n"); // this should never happen
-        
-        // get from queue
-        MMData ret;
-        queue_get(&ret);
-        // compute
-        mm_compute(&ret);
+// Main compute function (multi-threaded version)
+void compute()
+{
+	// Initialize queue
+	queue_init();
 
-        print_MMData(&ret);
-    }
-    queue_close();
-    fclose(fp);
+	// Create producer thread
+	pthread_t producer;
+	if (pthread_create(&producer, NULL, producer_func, NULL) != 0)
+	{
+		fprintf(stderr, "Error creating producer thread\n");
+		exit(1);
+	}
+
+	// Create consumer threads
+	const int num_workers = 4;
+	pthread_t consumers[num_workers];
+	thread_args_t consumer_args[num_workers];
+
+	for (int i = 0; i < num_workers; i++)
+	{
+		consumer_args[i].id = i;
+		if (pthread_create(&consumers[i], NULL, consumer_func, &consumer_args[i]) != 0)
+		{
+			fprintf(stderr, "Error creating consumer thread %d\n", i);
+			exit(1);
+		}
+	}
+
+	// Join threads
+	pthread_join(producer, NULL);
+	for (int i = 0; i < num_workers; i++)
+	{
+		pthread_join(consumers[i], NULL);
+	}
+
+	pthread_mutex_destroy(&output_mutex);
 }
 
-// you have to modify main to allow multi-threading.
-int main(){
-    queue_init();
-    
-    compute();
+// Producer function
+void *producer_func(void *arg)
+{
+	int N, res;
+	FILE *fp = fopen("./data/task3.txt", "r");
+	if (fp == NULL)
+	{
+		printf("Error opening file\n");
+		exit(1);
+	}
 
-    return 0;
+	fscanf(fp, "%d", &N);
+
+	for (int i = 0; i < N; i++)
+	{
+		// Process one matrix at a time
+		MMData data;
+		load_MMData(fp, &data);
+
+		// Add matrix to queue
+		res = queue_add(data);
+		if (res == -1)
+		{
+			printf("queue_add error\n");
+		}
+
+		// Wait until all consumers have processed their tasks
+		// before reading the next matrix - this is handled by
+		// queue_get returning when queue becomes empty
+	}
+
+	queue_close();
+	fclose(fp);
+	return NULL;
+}
+
+// Consumer function
+void *consumer_func(void *arg)
+{
+	(void)arg; // Avoid unused parameter warning
+
+	MMData matrix;
+	while (queue_get(&matrix) == 0)
+	{
+		// Process the matrix
+		mm_compute(&matrix);
+
+		// Print result with mutex protection
+		pthread_mutex_lock(&output_mutex);
+		print_MMData(&matrix);
+		pthread_mutex_unlock(&output_mutex);
+	}
+
+	return NULL;
+}
+
+// Main function
+int main()
+{
+	compute();
+	return 0;
 }

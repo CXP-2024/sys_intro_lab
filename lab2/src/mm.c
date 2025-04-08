@@ -40,8 +40,9 @@ void mm_compute(MMData* data){
 		// Then perform the multiplication
 		for(i = 0; i < m; i++){
 			for(l = 0; l < k; l++){
+				register int x = X[i*k+l];
 				for(j = 0; j < n; j++){
-					Z[i*n+j] += X[i*k+l] * Y[l*n+j];
+					Z[i*n+j] += x * Y[l*n+j];
 				}
 			}
 		}

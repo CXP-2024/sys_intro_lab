@@ -65,7 +65,7 @@ int main()
 
 	// Set up threads
 	pthread_t producer;
-	const int num_workers = 8; // You can adjust based on performance tests
+	const int num_workers = 4; // You can adjust based on performance tests
 	pthread_t workers[num_workers];
 	thread_args_t worker_args[num_workers];
 

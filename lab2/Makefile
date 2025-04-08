@@ -75,9 +75,54 @@ task3_grade: task3_grade_bin test/task3.py baseline data/task3.txt grade_checker
 	python3 test/task3.py 
 	rm task3_grade_bin task3_grade_output.txt task3_grade_time.txt task3_grade_baseline_time.txt task3_grade_answer.txt grade_checker
 
-# Task4, leave for you to implement.
-# multiply: 
-#
+# Task4, extract data from URL, process it, and run the multiplication
+multiply: task3
+	@echo "Extracting URL from data_source.txt..."
+	@bash -c 'URL=$$(grep -o "http://[^ ,]\+\.tar\.gz" data_source.txt); \
+	if [ -z "$$URL" ]; then \
+		echo "Error: Could not find URL in data_source.txt"; \
+		exit 1; \
+	fi; \
+	echo "Found URL: $$URL"; \
+	\
+	# Clean up any previous temp directory \
+	rm -rf task4_temp; \
+	\
+	# Create temporary directory for extraction \
+	mkdir -p task4_temp; \
+	\
+	echo "Downloading file..."; \
+	curl -s --output task4_temp/task4_data.tar.gz "$$URL"; \
+	\
+	echo "Checking downloaded file..."; \
+	if [ ! -s task4_temp/task4_data.tar.gz ]; then \
+		echo "Error: Downloaded file is empty or does not exist"; \
+		exit 1; \
+	fi; \
+	ls -lh task4_temp/task4_data.tar.gz; \
+	\
+	echo "Extracting files..."; \
+	tar -xzvf task4_temp/task4_data.tar.gz -C task4_temp; \
+	\
+	echo "Listing extracted files:"; \
+	find task4_temp -type f | head -20; \
+	\
+	echo "Processing matrix data..."; \
+	chmod +x data/process_matrix_data.py; \
+	python3 data/process_matrix_data.py task4_temp; \
+	\
+	# Check if task3.txt was created successfully \
+	if [ ! -s data/task3.txt ]; then \
+		echo "Error: Failed to create task3.txt or it is empty"; \
+		exit 1; \
+	fi; \
+	\
+	echo "Running matrix multiplication..."; \
+	./task3 > task4_output.txt; \
+	\
+	echo "Cleaning up temporary files..."; \
+	rm -rf task4_temp; \
+	echo "Multiplication complete, output saved to task4_output.txt"'
 
 task4_grade: data_source.txt
 	make multiply

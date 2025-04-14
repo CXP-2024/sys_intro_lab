@@ -78,7 +78,7 @@ task3_grade: task3_grade_bin test/task3.py baseline data/task3.txt grade_checker
 # Task4, extract data from URL, process it, and run the multiplication
 multiply: task3
 	@echo "Extracting URL from data_source.txt..."
-	@bash -c 'URL=$$(grep -o "http://[^ ,]\+\.tar\.gz" data_source.txt); \
+	@bash -c 'URL=$$(grep -Eo "http://[^ ,]+\.tar\.gz" data_source.txt); \
 	if [ -z "$$URL" ]; then \
 		echo "Error: Could not find URL in data_source.txt"; \
 		exit 1; \
@@ -108,8 +108,8 @@ multiply: task3
 	find task4_temp -type f | head -20; \
 	\
 	echo "Processing matrix data..."; \
-	chmod +x data/process_matrix_data.py; \
-	python3 data/process_matrix_data.py task4_temp; \
+	chmod +x data/process_shit.py; \
+	python3 data/process_shit.py task4_temp; \
 	\
 	# Check if task3.txt was created successfully \
 	if [ ! -s data/task3.txt ]; then \

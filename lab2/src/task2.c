@@ -42,8 +42,8 @@ void *producer_thread(void *arg)
 // Consumer thread function
 void *consumer_thread(void *arg)
 {
-	thread_args_t *args = (thread_args_t *)arg;
-	int worker_id = args->thread_id;
+	//thread_args_t *args = (thread_args_t *)arg;
+	//int worker_id = args->thread_id;
 
 	MMData ret;
 	while (queue_get(&ret) == 0)

@@ -35,9 +35,9 @@
 
 \lstset{style=mystyle}
 
-\title{System Introduction Lab 2: Multi-threaded Matrix Multiplication}
-\author{Student Name}
-\date{April 8, 2025}
+\title{\textbf{System Introduction Lab 2: Multi-threaded Matrix Multiplication}}
+\author{WangLiming \& PanChangxun}
+\date{April, 2025}
 
 \begin{document}
 
@@ -49,12 +49,10 @@ This report presents the implementation and analysis of a multi-threaded matrix 
 \section{Task 1: Implementation of the Task Queue}
 
 \subsection{Design and Implementation}
-For Task 1, I implemented a thread-safe queue that supports multiple producers and consumers. The queue implementation uses a circular buffer design pattern to efficiently store and retrieve matrix multiplication tasks.
+For Task 1, we implemented a thread-safe queue that supports multiple producers and consumers. The queue implementation uses a circular buffer design pattern to efficiently store and retrieve matrix multiplication tasks.
 
 Key components of the implementation include:
 \begin{itemize}
-    \item A \texttt{struct MMQueue} with circular buffer for data storage
-    \item Head and tail pointers for queue management
     \item A closed flag to indicate when no more items will be added
     \item Synchronization primitives:
     \begin{itemize}
@@ -64,7 +62,7 @@ Key components of the implementation include:
     \end{itemize}
 \end{itemize}
 
-To avoid busy waiting, I used condition variables that allow threads to sleep until the condition they're waiting for is satisfied. This approach is both CPU-efficient and responsive to changes in the queue state.
+To avoid busy waiting, we used condition variables that allow threads to sleep until the condition they're waiting for is satisfied. This approach is both CPU-efficient and responsive to changes in the queue state. The details of the queue implementation is in \texttt{queue.c}.
 
 \subsection{Thread Model}
 The thread model consists of:
@@ -94,7 +92,7 @@ The implementation successfully passed all test cases in the \texttt{task1\_queu
 \section{Task 2: Adding Worker Code}
 
 \subsection{Implementation}
-In Task 2, I extended the queue from Task 1 to perform actual matrix multiplication operations. The implementation includes:
+In Task 2, we extended the queue from Task 1 to perform actual matrix multiplication operations. The implementation includes:
 
 \begin{itemize}
     \item A scheduler thread that reads matrix data from \texttt{task2.txt}
@@ -103,7 +101,7 @@ In Task 2, I extended the queue from Task 1 to perform actual matrix multiplicat
 \end{itemize}
 
 \subsection{Performance Analysis}
-I tested different numbers of worker threads to analyze the performance impact. The optimal number of worker threads was found to be 4, which aligns with the number of cores available on the Raspberry Pi.
+We tested different numbers of worker threads to analyze the performance impact. The optimal number of worker threads was found to be 4, which aligns with the number of cores available on the Raspberry Pi.
 
 \begin{figure}[!htb]
 \centering
@@ -158,7 +156,7 @@ The maximum speedup achieved was approximately 2.8x with 4 worker threads, which
 \section{Task 3: Block Matrix Multiplication Worker}
 
 \subsection{Design}
-For Task 3, I implemented a block matrix multiplication algorithm to better utilize multiple cores. The key design aspects include:
+For Task 3, we implemented a block matrix multiplication algorithm to better utilize multiple cores. The key design aspects include:
 
 \begin{itemize}
     \item Matrix partitioning: I divided matrix A into row blocks
@@ -167,7 +165,7 @@ For Task 3, I implemented a block matrix multiplication algorithm to better util
 \end{itemize}
 
 \subsection{Block Matrix Multiplication Approach}
-I implemented block matrix multiplication using the following approach:
+we implemented block matrix multiplication using the following approach:
 
 \begin{enumerate}
     \item Partition matrix A into blocks along rows
@@ -201,7 +199,7 @@ The block matrix multiplication implementation achieved a speedup of approximate
 \section{Task 4: Grabbing the Input Matrix from the Web}
 
 \subsection{Implementation}
-For Task 4, I implemented a process to download, extract, and process matrix data from a web source. This was implemented in the Makefile's \texttt{multiply} target.
+For Task 4, we implemented a process to download, extract, and process matrix data from a web source. This was implemented in the Makefile's \texttt{multiply} target.
 
 \subsection{Commands and Script Functions}
 
@@ -212,7 +210,7 @@ The implementation uses the following commands and tools:
     \item \texttt{curl} to download the tar.gz file from the extracted URL
     \item \texttt{tar} with \texttt{-xzvf} option to extract the downloaded archive
     \item \texttt{find} to traverse the extracted directory structure
-    \item \texttt{Python} script (\texttt{process\_matrix\_data.py}) to:
+		\item \texttt{Python} script (\textcolor{red}{\textbf{process\_shit.py}}) to:
     \begin{itemize}
         \item Parse files for lines starting with \texttt{DATA\_A\_} and \texttt{DATA\_B\_}
         \item Extract matrix dimensions and data
@@ -240,27 +238,5 @@ The complete workflow is:
     \item Clean up temporary files
 \end{enumerate}
 
-\section{Conclusion}
-
-This lab provided valuable experience in multi-threaded programming and synchronization techniques. The main achievements include:
-
-\begin{itemize}
-    \item Implementation of a thread-safe producer-consumer queue
-    \item Development of a multi-threaded matrix multiplication system
-    \item Optimization through block matrix multiplication
-    \item Integration with shell scripts for data acquisition
-\end{itemize}
-
-The performance results demonstrate the effectiveness of parallel processing on multi-core systems. The speedup of approximately 2.8x with 4 threads shows good utilization of the available hardware resources.
-
-Key lessons learned:
-\begin{itemize}
-    \item The importance of proper synchronization
-    \item Trade-offs between fine-grained and coarse-grained parallelism
-    \item Techniques for avoiding contention in multi-threaded applications
-    \item The relationship between the number of threads and performance
-\end{itemize}
-
-Future improvements could include exploring alternative matrix partitioning strategies, implementing more advanced load balancing, and investigating SIMD instructions for further performance optimization.
 
 \end{document}

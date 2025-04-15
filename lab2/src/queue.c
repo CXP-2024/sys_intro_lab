@@ -22,7 +22,7 @@ void queue_init()
 	// init/reset the queue
 	QData.h = 0;
 	QData.t = 0;
-	QData.closed = 0;
+	QData.closed = 0; // only set to 1 when closed and only to avoid adding data but can still get data until no data left
 
 	// Initialize synchronization primitives
 	pthread_mutex_init(&QData.mutex, NULL);
@@ -41,6 +41,8 @@ int queue_get(MMData *ret)
 	}
 
 	// If queue is empty and closed, return -1
+	// this will not happen, since if closed and called queue_get, which only happens when there is still data in the queue
+	// but just in case
 	if (QData.h >= QData.t)
 	{
 		pthread_mutex_unlock(&QData.mutex);
@@ -98,6 +100,9 @@ void queue_close()
 	QData.closed = 1;
 
 	// Signal all waiting threads
+	// however, we don't need to signal not_empty and not_full, since when closed, those workers(if still exist) are wake already
+	// and will exit after they finish their work
+	// but just in case, we signal them
 	pthread_cond_broadcast(&QData.not_empty);
 	pthread_cond_broadcast(&QData.not_full);
 
